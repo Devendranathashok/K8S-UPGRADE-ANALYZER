@@ -135,13 +135,21 @@ k8s-upgrade-analyzer --source 1.27 --target 1.30 --api-key sk-ant-xxx
 
 ## Output
 
-Reports are saved in the output directory:
+Reports are automatically saved to the `reports/` directory (or your `--output-dir`):
 
 ```
 reports/
-  assessment_1_27_to_1_30_20240621T103045Z.md    # full analysis
-  assessment_1_27_to_1_30_20240621T103045Z.json   # metadata
+  assessment_1_31_to_1_32_20240621T103045Z.md    # full Claude analysis (Markdown)
+  assessment_1_31_to_1_32_20240621T103045Z.json   # metadata (versions, timestamp)
 ```
+
+To also capture terminal output to a log file:
+
+```bash
+k8s-upgrade-analyzer --source 1.31 --target 1.32 --output-dir ./reports 2>&1 | tee terminal.log
+```
+
+> **Kubernetes upgrade path:** Always upgrade **one minor version at a time** (e.g. 1.31 → 1.32, then 1.32 → 1.33). Skipping minor versions is not supported.
 
 ---
 
