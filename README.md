@@ -185,24 +185,46 @@ docker push <your-dockerhub-username>/k8s-upgrade-analyzer:v1.0
 
 Update the `image:` field in `deploy/job.yaml` to match.
 
-### 4. Apply manifests
+### 4. Install Metrics Server (optional but recommended)
+
+Required for `kubectl top nodes/pods` resource pressure data in the report.
+
+```bash
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+If your cluster uses self-signed kubelet certificates (common in self-hosted clusters), patch it to skip TLS verification:
+
+```bash
+kubectl patch deployment metrics-server -n kube-system \
+  --type='json' \
+  -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+```
+
+Wait for it to be ready:
+
+```bash
+kubectl rollout status deployment metrics-server -n kube-system
+kubectl top nodes
+```
+
+### 5. Apply manifests
 
 ```bash
 kubectl apply -f deploy/rbac.yaml
 kubectl apply -f deploy/job.yaml
 ```
 
-### 5. View logs
+### 6. View logs
 
 ```bash
 kubectl logs -f job/k8s-upgrade-analyzer
 ```
 
-### 6. Copy the report
+### 7. Save the report
 
 ```bash
-POD=$(kubectl get pod -l job-name=k8s-upgrade-analyzer -o name)
-kubectl cp $POD:/reports ./reports
+kubectl logs $(kubectl get pod -l job-name=k8s-upgrade-analyzer -o name) > assessment_1.31_to_1.32.md
 ```
 
 ---
