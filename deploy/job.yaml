@@ -14,7 +14,7 @@ spec:
         - name: dockerhub-secret
       containers:
         - name: analyzer
-          image: <your-dockerhub-username>/k8s-upgrade-analyzer:v1.0
+          image: devendranathashok/k8s-upgrade-analyzer:v1.0
           imagePullPolicy: Always
           args:
             - "--source"
