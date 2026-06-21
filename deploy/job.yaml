@@ -18,9 +18,9 @@ spec:
           imagePullPolicy: Always
           args:
             - "--source"
-            - "1.27"                                # change to your current version
+            - "1.31"                                # change to your current version
             - "--target"
-            - "1.30"                                # change to your target version
+            - "1.32"                                # change to your target version
             - "--output-dir"
             - "/reports"
           env:
