@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k8s-upgrade-analyzer
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 3600   # auto-cleanup after 1 hour
+  backoffLimit: 0                  # don't retry on failure
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: k8s-upgrade-analyzer-sa  # needs read access to cluster resources
+      imagePullSecrets:
+        - name: dockerhub-secret
+      containers:
+        - name: analyzer
+          image: <your-dockerhub-username>/k8s-upgrade-analyzer:v1.0
+          imagePullPolicy: Always
+          args:
+            - "--source"
+            - "1.27"                                # change to your current version
+            - "--target"
+            - "1.30"                                # change to your target version
+            - "--output-dir"
+            - "/reports"
+          env:
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: k8s-upgrade-analyzer-secret
+                  key: ANTHROPIC_API_KEY
+          volumeMounts:
+            - name: reports
+              mountPath: /reports
+      volumes:
+        - name: reports
+          emptyDir: {}
